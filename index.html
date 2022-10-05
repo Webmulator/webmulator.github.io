@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Webmulator</title>
+        <link rel="stylesheet" href="https://unpkg.com/98.css" />
+
+        
+        <meta name = viewport content = "width = device-width, initial-scale = 1">
+
+        <style>
+            body {
+                background-color: #008080;
+            }
+            
+            p {
+                font-size: 17px;
+                text-align: center;
+            }
+            
+            .window {
+                position: relative; 
+                left: 0; 
+                right: 0; 
+                margin-left: auto;
+                margin-right: auto;
+                top: 5px;
+                width: 1000px;
+            }
+        </style>
+    </head>
+
+    <body>
+        
+        
+        <div class="window" id="gamewindow" style="display: block;">
+          <div class="title-bar">
+            <div class="title-bar-text" id="titleBar">Webmulator</div>
+            <div class="title-bar-controls">
+              <button aria-label="Minimize"></button>
+              <button aria-label="Maximize"></button>
+              <button aria-label="Close" onclick="window.parent.window.location.replace('https://classroom.google.com/0/h');"></button>
+            </div>
+            </div>
+          <div class="window-body" id="home">
+            <!-- content starts -->
+              <div id="welcomeMessage"><p>Welcome to Webmulator, a simple retro emulator that can ROMs from a variety of consoles.</p>
+              <p>To remove this page from your search history, click the <strong>x</strong> button in the top right.</p>
+              <p>Please select an option below to begin.</p></div>
+              <div id="box" style="width: 900px">
+                <input type = file id = input hidden>
+                <button id="uploadbutton" style="">Upload ROM</button>
+              </div>
+            <!-- content ends -->
+          </div>
+        </div>
+        
+        <script>
+            document.getElementById('uploadbutton').addEventListener('click', openDialog);
+
+            function openDialog() {
+              document.getElementById('input').click();
+            }
+        </script>
+        
+        <script>
+            input.onchange = async () => {
+                const url = URL.createObjectURL(new Blob([input.files[0]]))
+                const parts = input.files[0].name.split(".")
+
+                const core = await (async (ext) => {
+                    if (["fds", "nes", "unif", "unf"].includes(ext))
+                        return "nes"
+
+                    if (["smc", "fig", "sfc", "gd3", "gd7", "dx2", "bsx", "swc"].includes(ext))
+                        return "snes"
+
+                    if (["z64", "n64"].includes(ext))
+                        return "n64"
+
+                    if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
+                        return ext
+
+                    return await new Promise(resolve => {
+                        const cores = {
+                            "Nintendo 64": "n64",
+                            "Nintendo Game Boy": "gb",
+                            "Nintendo Game Boy Advance": "gba",
+                            "Nintendo DS": "nds",
+                            "Nintendo Entertainment System": "nes",
+                            "Super Nintendo Entertainment System": "snes",
+                            "PlayStation": "psx",
+                            "Virtual Boy": "vb",
+                            "Sega Mega Drive": "segaMD",
+                            "Sega Master System": "segaMS",
+                            "Sega CD": "segaCD",
+                            "Atari Lynx": "lynx",
+                            "Sega 32X": "sega32x",
+                            "Atari Jaguar": "jaguar",
+                            "Sega Game Gear": "segaGG",
+                            "Sega Saturn": "segaSaturn",
+                            "Atari 7800": "atari7800",
+                            "Atari 2600": "atari2600"
+                        }
+
+                        const button = document.createElement("button")
+                        const select = document.createElement("select")
+
+                        for (const type in cores) {
+                            const option = document.createElement("option")
+
+                            option.value = cores[type]
+                            option.textContent = type
+                            select.appendChild(option)
+                        }
+
+                        button.onclick = () => resolve(select[select.selectedIndex].value)
+                        button.textContent = "Load game"
+                        box.innerHTML = ""
+
+                        box.appendChild(select)
+                        box.appendChild(button)
+                    })
+                })(parts.pop())
+
+                const div = document.createElement("div")
+                const sub = document.createElement("div")
+                const script = document.createElement("script")
+
+                sub.id = "game"
+
+                box.remove()
+                div.appendChild(sub)
+                document.getElementById('home').appendChild(div);
+                document.getElementById('welcomeMessage').innerHTML = "";
+                document.getElementById('titleBar').innerHTML = `Webmulator (${parts.shift()})`
+
+                window.EJS_player = "#game"
+                window.EJS_gameName = parts.shift()
+                window.EJS_biosUrl = ""
+                window.EJS_gameUrl = url
+                window.EJS_core = core
+                window.EJS_pathtodata = "https://rawcdn.githack.com/EmulatorJS/EmulatorJS/main/data/"
+                window.EJS_startOnLoaded = true;
+                
+
+                script.src = "https://rawcdn.githack.com/EmulatorJS/EmulatorJS/main/data/loader.js"
+                document.body.appendChild(script)
+            }
+
+            box.ondragover = () => box.setAttribute("drag", true)
+            box.ondragleave = () => box.removeAttribute("drag")
+        </script>
+    </body>
+</html>
