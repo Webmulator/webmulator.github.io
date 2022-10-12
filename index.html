@@ -35,7 +35,7 @@
             <div class="title-bar-text" id="titleBar">Webmulator</div>
             <div class="title-bar-controls">
               <button aria-label="Minimize"></button>
-              <button aria-label="Maximize"></button>
+              <button aria-label="Maximize" onclick="launchAB();"></button>
               <button aria-label="Close" onclick="window.parent.window.location.replace('https://classroom.google.com/0/h');"></button>
             </div>
             </div>
@@ -56,6 +56,23 @@
 
             function openDialog() {
               document.getElementById('input').click();
+            }
+
+            function launchAB() {
+                alert("When the about:blank window launches, come back to this tab and click the x button to clear this page from your search history.");
+                const tab = window.open('about:blank', '_blank');
+                
+                const iframe = tab.document.createElement('iframe');
+                const stl = iframe.style;
+                stl.border = stl.outline = 'none';
+                stl.width = '100vw';
+                stl.height = '100vh';
+                stl.position = 'fixed';
+                stl.left = stl.right = stl.top = stl.bottom = '0';
+                iframe.src = "https://webmulator.github.io";
+                tab.document.body.appendChild(iframe);
+                alert("Launched successfully!");
+                
             }
         </script>
         
